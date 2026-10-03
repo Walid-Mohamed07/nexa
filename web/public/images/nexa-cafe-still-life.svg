@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" fill="none">
+  <title>NEXA cafe still life placeholder</title>
+  <rect width="1200" height="900" fill="#dce7e0"/>
+  <path d="M0 588h1200v312H0z" fill="#c8a984"/>
+  <path d="M0 626c190-42 392-53 600-32 226 23 402 13 600-35v341H0z" fill="#e6d4bd"/>
+  <path d="M96 0h430v410H96z" fill="#f0e9db"/>
+  <path d="M126 30h370v350H126z" fill="#8eae9d"/>
+  <path d="M306 30v350M126 205h370" stroke="#f0e9db" stroke-width="18"/>
+  <path d="M80 414h462" stroke="#486654" stroke-width="15" stroke-linecap="round"/>
+  <path d="M904 0h296v545H904z" fill="#ba755e"/>
+  <path d="M944 43h217v457H944z" fill="#dba278"/>
+  <path d="M960 468c58-102 122-160 190-176" stroke="#486654" stroke-width="15" stroke-linecap="round"/>
+  <path d="M1002 409c-4-49 17-76 63-81-1 45-23 74-63 81ZM1086 351c-7-42 11-69 53-80 1 42-17 68-53 80ZM1053 459c-5-39 12-65 48-76 2 39-14 64-48 76Z" fill="#76917c"/>
+  <ellipse cx="631" cy="718" rx="371" ry="72" fill="#987559" fill-opacity=".28"/>
+  <path d="M412 327h269l-31 348c-5 49-45 86-94 86h-20c-49 0-89-37-94-86l-30-348Z" fill="#edf3eb" fill-opacity=".73" stroke="#f8f3e8" stroke-width="17"/>
+  <path d="M426 459h241l-17 207c-4 37-35 66-72 66h-64c-37 0-68-29-72-66l-16-207Z" fill="#8c5238"/>
+  <path d="M428 474h237v58H433z" fill="#c08a5d"/>
+  <path d="M446 482c31 23 61 24 92 0 30-24 59-24 90 0 12 9 24 14 38 15" stroke="#f1d7b1" stroke-width="13" stroke-linecap="round"/>
+  <path d="M523 327c-24-32-24-64 0-96M577 327c-22-30-22-60 0-90" stroke="#f8f3e8" stroke-width="11" stroke-linecap="round"/>
+  <path d="M713 511c83-7 121 25 115 83-5 49-43 72-104 68" stroke="#f8f3e8" stroke-width="20" stroke-linecap="round"/>
+  <path d="M786 522c34 4 47 24 41 57-5 26-19 39-43 42" stroke="#8c5238" stroke-width="12"/>
+  <ellipse cx="551" cy="681" rx="115" ry="18" fill="#583726" fill-opacity=".38"/>
+  <path d="M818 701c24-47 78-64 131-47 27 9 44 28 58 53-30 15-67 24-111 22-33-1-60-10-78-28Z" fill="#b97043"/>
+  <path d="M841 695c38-12 79-14 120-7M865 711c31-8 61-9 89-4" stroke="#e2b77e" stroke-width="9" stroke-linecap="round"/>
+  <path d="M290 680c-10-55 3-97 39-126 12 53 3 95-27 126M305 711c-48-20-69-55-63-105 48 20 71 55 63 105ZM321 677c9-51 37-79 84-83-9 49-37 77-84 83Z" fill="#587260"/>
+  <path d="M306 711c5-45 8-88 13-130" stroke="#486654" stroke-width="9" stroke-linecap="round"/>
+</svg>

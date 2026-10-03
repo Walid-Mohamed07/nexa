@@ -1,0 +1,1392 @@
+openapi: 3.0.3
+security: []
+info:
+  title: NEXA Café Platform API
+  version: 1.0.0
+  description: >-
+    Backend-agnostic contract for the NEXA customer experience. Customer IDs are
+    resource selectors, never proof of identity. Customer-specific reads and
+    writes require an authenticated identity and server-side ownership checks.
+    Production token issuance and authorization are implemented by the Python
+    backend; the mock-only X-Mock-Identity header is not a production scheme.
+    Requests may include an X-Request-ID correlation header; services should
+    echo it in the response. This value is diagnostic metadata, not identity.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: /api/v1
+    description: Relative API path; the Web deployment supplies the API origin per environment
+paths:
+  /qr/{token}/resolve:
+    get:
+      operationId: resolveQrCode
+      summary: Resolve QR code to café, branch and table context
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resolved QR context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseQrResolve"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /sessions:
+    post:
+      operationId: createSession
+      summary: Create a customer session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSessionRequest"
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseSession"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /sessions/{sessionId}:
+    get:
+      operationId: getSession
+      summary: Retrieve a session
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseSession"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /visits/resolve:
+    get:
+      operationId: resolveVisit
+      summary: Resolve or create the current customer visit from the cafe, branch, table, and session context.
+      description: If customerId is supplied, the caller must be authenticated as that customer. customerId alone does not establish identity. Production authentication and ownership enforcement are implemented by the backend.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: cafeId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: branchId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: tableId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: customerId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sessionId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resolved visit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVisit"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /cafes/{cafeId}/recommendations:
+    get:
+      operationId: getRecommendations
+      summary: Return explainable, deterministic recommendations for the current visit.
+      description: Guest recommendations are public. If customerId is supplied, the caller must be authenticated as that customer before customer preferences or order history can influence the response. customerId alone does not establish identity.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: cafeId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: branchId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: customerId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: visitId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: timeContext
+          required: false
+          schema:
+            type: string
+            enum: [morning, afternoon, evening]
+        - in: query
+          name: occasion
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recommendation list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseRecommendations"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /cafes/{cafeId}:
+    get:
+      operationId: getCafe
+      summary: Get café details
+      parameters:
+        - in: path
+          name: cafeId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Café details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCafe"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /cafes/{cafeId}/branches/{branchId}:
+    get:
+      operationId: getBranch
+      summary: Get branch details
+      parameters:
+        - in: path
+          name: cafeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: branchId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Branch details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBranch"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /cafes/{cafeId}/menu:
+    get:
+      operationId: getCafeMenu
+      summary: Get menu for a café
+      parameters:
+        - in: path
+          name: cafeId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Menu data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseMenu"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /cafes/{cafeId}/home:
+    get:
+      operationId: getCafeHome
+      summary: Get active customer-facing café discovery content
+      description: Returns active, branch-applicable discovery sections with references to available menu items and existing menu categories. Content schedule and activation rules are applied by the service.
+      parameters:
+        - in: path
+          name: cafeId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: branchId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer-facing café home composition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCafeHome"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /menu/categories/{categoryId}:
+    get:
+      operationId: getMenuCategory
+      summary: Get category details
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseMenuCategory"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /menu/items/{itemId}:
+    get:
+      operationId: getMenuItem
+      summary: Get menu item details
+      parameters:
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseMenuItem"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /customers:
+    post:
+      operationId: createCustomer
+      summary: Create a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerRequest"
+      responses:
+        "201":
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCustomer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /customers/{customerId}:
+    get:
+      operationId: getCustomer
+      summary: Get customer profile
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId identifies the requested profile; it is not an authentication credential.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCustomer"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /orders:
+    post:
+      operationId: createOrder
+      summary: Create an order
+      description: Requires an authenticated customer identity that owns customerId. Also validates the active session and its cafe/branch/table relationship, quantities and availability. Prices are recalculated from the menu; client prices are ignored. Unsupported modifiers are rejected. customerId is not proof of identity.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Reuse for retries of the identical payload. Replay returns the original order; changed payload returns VALIDATION_ERROR.
+          schema:
+            type: string
+            minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseOrder"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      summary: Get an order
+      description: Requires an authenticated customer identity and server-side verification that the order belongs to that customer. An orderId is not proof of ownership.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseOrder"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /customers/{customerId}/orders:
+    get:
+      operationId: getCustomerOrders
+      summary: Retrieve order history for a customer
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseOrdersList"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /customers/{customerId}/feedback:
+    get:
+      operationId: getCustomerFeedback
+      summary: List feedback submitted by the authenticated customer
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is a resource selector, never proof of identity. Only the caller's own feedback is returned.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Customer feedback history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseReviewsList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /customers/{customerId}/preferences:
+    get:
+      operationId: getCustomerPreferences
+      summary: Read explicit customer preferences.
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Preferences list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCustomerPreferences"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: addCustomerPreference
+      summary: Add or update an explicit customer preference.
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddCustomerPreferenceRequest"
+      responses:
+        "201":
+          description: Preference saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCustomerPreference"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      operationId: clearCustomerPreferences
+      summary: Clear explicit customer preferences.
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Preferences cleared
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseCustomerPreferences"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /customers/{customerId}/favorites:
+    get:
+      operationId: getFavorites
+      summary: Get favorite items
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Favorites list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseFavorites"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: addFavorite
+      summary: Add a favorite
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFavoriteRequest"
+      responses:
+        "201":
+          description: Favorite created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseFavorite"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /customers/{customerId}/favorites/{itemId}:
+    delete:
+      operationId: removeFavorite
+      summary: Remove a favorite
+      description: Requires an authenticated customer identity and server-side ownership authorization. customerId is only the requested resource selector.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Favorite removed
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /orders/{orderId}/review:
+    post:
+      operationId: createReview
+      summary: Submit private feedback for a completed order
+      description: Requires an authenticated customer identity and server-side verification that the order belongs to that customer. Only COMPLETED orders are eligible. At most one feedback record exists per order. Replays with the same Idempotency-Key return the original record; the same key with a changed payload returns 409. customerId is derived from the order and is never accepted as proof of identity.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Stable across retries of the same feedback submission.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+      responses:
+        "200":
+          description: Existing feedback returned for an idempotent replay or duplicate order submission
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseReview"
+        "201":
+          description: Feedback created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseReview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                [
+                  VALIDATION_ERROR,
+                  UNAUTHORIZED,
+                  FORBIDDEN,
+                  NOT_FOUND,
+                  INVALID_QR,
+                  SESSION_EXPIRED,
+                  ITEM_UNAVAILABLE,
+                  ORDER_NOT_FOUND,
+                  INVALID_ORDER_STATUS,
+                  FEEDBACK_NOT_ELIGIBLE,
+                  IDEMPOTENCY_CONFLICT,
+                  INTERNAL_ERROR,
+                ]
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+            status:
+              type: integer
+              example: 400
+    Meta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 5
+    Cafe:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        currency:
+          type: string
+        timezone:
+          type: string
+        logo:
+          type: string
+        status:
+          type: string
+        googlePlaceId:
+          type: string
+          nullable: true
+        googleReviewUrl:
+          type: string
+          nullable: true
+    Branch:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        cafeId:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        timezone:
+          type: string
+        status:
+          type: string
+    Table:
+      type: object
+      required: [id, branchId, name]
+      properties:
+        id:
+          type: string
+        branchId:
+          type: string
+        floorId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        capacity:
+          type: integer
+        status:
+          type: string
+        qrToken:
+          type: string
+    Session:
+      type: object
+      required: [id, cafeId, status]
+      properties:
+        id:
+          type: string
+        cafeId:
+          type: string
+        branchId:
+          type: string
+        tableId:
+          type: string
+        customerId:
+          type: string
+          nullable: true
+        startedAt:
+          type: string
+          format: date-time
+        lastActivityAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        sessionToken:
+          type: string
+    Visit:
+      type: object
+      required: [id, cafeId, branchId, tableId, startedAt, state]
+      properties:
+        id:
+          type: string
+        cafeId:
+          type: string
+        branchId:
+          type: string
+        tableId:
+          type: string
+        customerId:
+          type: string
+          nullable: true
+        sessionId:
+          type: string
+          nullable: true
+        startedAt:
+          type: string
+          format: date-time
+        state:
+          type: string
+          enum: [ACTIVE, COMPLETED, EXPIRED]
+    Customer:
+      type: object
+      required: [id, name, phone]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lastVisitAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+    MenuCategory:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        cafeId:
+          type: string
+        name:
+          type: string
+        sortOrder:
+          type: integer
+    MenuItem:
+      type: object
+      required: [id, name, price, currency]
+      properties:
+        id:
+          type: string
+        categoryId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        availability:
+          type: string
+        featured:
+          type: boolean
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CustomerPreference:
+      type: object
+      required: [id, customerId, preferenceType, value, source, createdAt]
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        preferenceType:
+          type: string
+          enum: [category, drink, flavor, dietary]
+        value:
+          type: string
+        source:
+          type: string
+          enum: [EXPLICIT, SYSTEM_DEFAULT]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Recommendation:
+      type: object
+      required: [id, itemId, title, reason, source, priority]
+      properties:
+        id:
+          type: string
+        itemId:
+          type: string
+        title:
+          type: string
+        reason:
+          type: string
+        source:
+          type: string
+          enum:
+            [FEATURED, POPULAR, SEASONAL, OCCASION, RECENT, EXPLICIT_PREFERENCE]
+        priority:
+          type: integer
+          minimum: 1
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        itemId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    Review:
+      type: object
+      required:
+        [id, customerId, orderId, cafeId, branchId, rating, comment, createdAt]
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        visitId:
+          type: string
+          nullable: true
+        orderId:
+          type: string
+        cafeId:
+          type: string
+        branchId:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 1000
+        createdAt:
+          type: string
+          format: date-time
+    OrderItem:
+      type: object
+      required: [id, menuItemId, itemNameSnapshot, unitPrice, quantity, total]
+      properties:
+        id:
+          type: string
+        menuItemId:
+          type: string
+        itemNameSnapshot:
+          type: string
+        unitPrice:
+          type: number
+        quantity:
+          type: integer
+        total:
+          type: number
+        modifiers:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        notes:
+          type: string
+          nullable: true
+    Order:
+      type: object
+      required:
+        [items, id, orderNumber, cafeId, branchId, tableId, sessionId, customerId, status, subtotal, total, currency, createdAt]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        id:
+          type: string
+        orderNumber:
+          type: string
+        cafeId:
+          type: string
+        branchId:
+          type: string
+        tableId:
+          type: string
+        sessionId:
+          type: string
+        customerId:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            [PENDING, CONFIRMED, PREPARING, READY, SERVED, COMPLETED, CANCELLED]
+        subtotal:
+          type: number
+        discounts:
+          type: number
+        tax:
+          type: number
+        total:
+          type: number
+        currency:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateSessionRequest:
+      type: object
+      required: [cafeId, tableId]
+      properties:
+        cafeId:
+          type: string
+        tableId:
+          type: string
+    CreateCustomerRequest:
+      type: object
+      required: [name, phone]
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+    CreateOrderRequest:
+      type: object
+      required: [cafeId, branchId, tableId, sessionId, customerId, items]
+      properties:
+        cafeId:
+          type: string
+        branchId:
+          type: string
+        tableId:
+          type: string
+        sessionId:
+          type: string
+        customerId:
+          type: string
+          nullable: true
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/OrderItemRequest"
+        notes:
+          type: string
+    OrderItemRequest:
+      type: object
+      required: [menuItemId, quantity]
+      properties:
+        menuItemId:
+          type: string
+        itemNameSnapshot:
+          type: string
+        unitPrice:
+          type: number
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+        modifiers:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        notes:
+          type: string
+    AddCustomerPreferenceRequest:
+      type: object
+      required: [preferenceType, value]
+      properties:
+        preferenceType:
+          type: string
+          enum: [category, drink, flavor, dietary]
+        value:
+          type: string
+        source:
+          type: string
+          enum: [EXPLICIT, SYSTEM_DEFAULT]
+    AddFavoriteRequest:
+      type: object
+      required: [itemId]
+      properties:
+        itemId:
+          type: string
+    CreateReviewRequest:
+      type: object
+      required: [rating]
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 1000
+        visitId:
+          type: string
+          nullable: true
+    QrResolve:
+      type: object
+      required: [cafe, branch, table, session]
+      properties:
+        cafe:
+          $ref: "#/components/schemas/Cafe"
+        branch:
+          $ref: "#/components/schemas/Branch"
+        table:
+          $ref: "#/components/schemas/Table"
+        session:
+          $ref: "#/components/schemas/Session"
+    ApiResponseQrResolve:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/QrResolve"
+        meta:
+          type: object
+    ApiResponseCafe:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Cafe"
+        meta:
+          type: object
+    ApiResponseBranch:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Branch"
+        meta:
+          type: object
+    ApiResponseSession:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Session"
+        meta:
+          type: object
+    ApiResponseVisit:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Visit"
+        meta:
+          type: object
+    ApiResponseCustomer:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Customer"
+        meta:
+          type: object
+    ApiResponseMenu:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/MenuItem"
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/MenuCategory"
+        meta:
+          $ref: "#/components/schemas/Meta"
+    CafeHomeSection:
+      type: object
+      required: [id, type, title, items]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [FEATURED, POPULAR, NEW, SEASONAL, OCCASION]
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        categoryId:
+          type: string
+          description: References an existing MenuCategory.
+        ctaLabel:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuItem"
+    ApiResponseCafeHome:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [sections, categories]
+          properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/CafeHomeSection"
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/MenuCategory"
+        meta:
+          type: object
+    ApiResponseMenuCategory:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/MenuCategory"
+        meta:
+          type: object
+    ApiResponseMenuItem:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/MenuItem"
+        meta:
+          type: object
+    ApiResponseOrder:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Order"
+        meta:
+          type: object
+    ApiResponseOrdersList:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+        meta:
+          $ref: "#/components/schemas/Meta"
+    ApiResponseCustomerPreference:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/CustomerPreference"
+        meta:
+          type: object
+    ApiResponseCustomerPreferences:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerPreference"
+        meta:
+          type: object
+    ApiResponseRecommendations:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Recommendation"
+        meta:
+          type: object
+    ApiResponseFavorite:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Favorite"
+        meta:
+          type: object
+    ApiResponseFavorites:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Favorite"
+        meta:
+          $ref: "#/components/schemas/Meta"
+    ApiResponseReview:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Review"
+        meta:
+          type: object
+    ApiResponseReviewsList:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Review"
+        meta:
+          $ref: "#/components/schemas/Meta"
+  responses:
+    Unauthorized:
+      description: Customer identity is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Authenticated identity does not own the requested customer or order resource
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: Feedback is not eligible or the idempotency key conflicts with a previous request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"

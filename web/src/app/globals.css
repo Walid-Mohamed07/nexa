@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+    --font-sans: "Manrope", "Segoe UI", sans-serif;
+
+    --color-background: #f6f0ea;
+    --color-surface: #ffffff;
+    --color-surface-elevated: #f3ece6;
+    --color-primary: #8a5c3c;
+    --color-primary-hover: #734a2d;
+    --color-primary-soft: rgba(138, 92, 60, 0.12);
+    --color-secondary: #d39a68;
+    --color-secondary-soft: rgba(211, 154, 104, 0.12);
+    --color-text: #1f1a17;
+    --color-text-muted: #6a5a54;
+    --color-text-subtle: #9a867f;
+    --color-border: #e7d9ce;
+    --color-success: #2e7d5c;
+    --color-success-soft: rgba(46, 125, 92, 0.12);
+    --color-warning: #b36b2a;
+    --color-warning-soft: rgba(179, 107, 42, 0.12);
+    --color-error: #b34e3a;
+    --color-on-primary: #fffaf7;
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 26px;
+
+    --shadow-sm: 0 1px 2px rgba(31, 26, 23, 0.04);
+    --shadow-md: 0 12px 28px rgba(31, 26, 23, 0.08);
+    --shadow-lg: 0 18px 32px rgba(31, 26, 23, 0.12);
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: var(--font-sans);
+    background: var(--color-background);
+    color: var(--color-text);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+:is(button, a, input):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+}
+button,
+a {
+    touch-action: manipulation;
+}
+.menu-page :is(h1, h2, h3, h4, p),
+.menu-sheet * {
+    letter-spacing: 0;
+}
+.menu-page article {
+    border-radius: 12px;
+}
+.menu-page article h4 {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.menu-sheet {
+    max-height: 92dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+.menu-sheet button {
+    min-width: 44px;
+    min-height: 44px;
+}
+.menu-sheet img {
+    flex-shrink: 0;
+}
+.menu-sheet [role="dialog"] {
+    overflow-wrap: anywhere;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+    margin: 0;
+}
+
+ul,
+ol {
+    padding-left: 18px;
+    margin: 0;
+}

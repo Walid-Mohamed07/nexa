@@ -1,0 +1,487 @@
+.order-page {
+    min-height: 100dvh;
+    letter-spacing: 0;
+}
+.order-header {
+    min-height: 88px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--color-surface);
+}
+.order-back {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+.order-brand {
+    font-weight: 700;
+    font-size: 20px;
+}
+.order-table {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+    color: var(--color-text-muted);
+}
+.order-content {
+    max-width: 1040px;
+    margin: auto;
+    padding: 32px 24px 120px;
+}
+.order-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 40px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+.order-steps > span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.order-steps > span > span {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+}
+.order-steps [aria-current] {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+.order-steps [aria-current] > span {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+.order-title {
+    margin-bottom: 32px;
+}
+.order-title h1 {
+    font-size: 36px;
+    line-height: 1.2;
+    font-weight: 600;
+    outline: none;
+}
+.order-title p {
+    margin-top: 12px;
+    color: var(--color-text-muted);
+}
+.order-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 48px;
+}
+.order-lines {
+    padding: 0;
+    list-style: none;
+}
+.order-line {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 24px 0;
+    border-top: 1px solid var(--color-border);
+}
+.order-thumbnail {
+    position: relative;
+    width: 80px;
+    height: 88px;
+    overflow: hidden;
+    background: var(--color-surface-elevated);
+    border-radius: 8px;
+}
+.order-line h2 {
+    font-size: 17px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.order-line p {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+.order-line-total {
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.order-quantity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+.order-quantity button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+.order-quantity span {
+    min-width: 24px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.order-summary {
+    border-top: 2px solid var(--color-primary);
+    padding-top: 24px;
+    align-self: start;
+    position: sticky;
+    top: 24px;
+}
+.order-summary h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+.order-summary dl > div,
+.order-receipt dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 16px 0;
+}
+.order-summary dd,
+.order-receipt dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+.order-summary p {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 16px 0 24px;
+}
+.order-total {
+    border-top: 1px solid var(--color-border);
+    padding-top: 20px;
+    font-size: 20px;
+    font-weight: 700;
+}
+.order-action button {
+    width: 100%;
+    min-height: 52px;
+    height: auto;
+    padding: 12px 16px;
+}
+.order-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    color: var(--color-primary);
+}
+.order-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+.order-form {
+    max-width: 460px;
+    display: grid;
+    gap: 28px;
+}
+.order-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.order-form input {
+    width: 100%;
+    min-height: 56px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: var(--color-surface);
+    font-size: 16px;
+}
+.order-form p {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin-top: 10px;
+}
+.order-form .field-error {
+    color: var(--color-error);
+}
+.order-form input[aria-invalid="true"] {
+    border-color: var(--color-error);
+}
+.order-error {
+    padding: 16px;
+    border-left: 3px solid var(--color-error);
+    background: var(--color-surface);
+    margin-bottom: 24px;
+    color: var(--color-error);
+}
+.order-person {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.order-person h2 {
+    font-size: 22px;
+    margin: 8px 0;
+    overflow-wrap: anywhere;
+}
+.order-person p {
+    color: var(--color-text-muted);
+    overflow-wrap: anywhere;
+}
+.order-empty,
+.order-confirmation {
+    max-width: 480px;
+    margin: 24px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    text-align: center;
+}
+.order-empty h2,
+.order-confirmation h2 {
+    font-size: 24px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+}
+.order-check {
+    color: var(--color-success);
+    background: var(--color-success-soft);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+.order-receipt {
+    width: 100%;
+    background: var(--color-surface);
+    border-top: 3px solid var(--color-primary);
+    padding: 28px;
+    margin: 8px 0;
+    text-align: left;
+}
+.order-receipt > span {
+    display: block;
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+.order-receipt > strong {
+    display: block;
+    margin: 8px 0 24px;
+    font-size: 28px;
+    overflow-wrap: anywhere;
+}
+.order-feedback {
+    display: grid;
+    gap: 18px;
+}
+.order-feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-primary);
+}
+.order-feedback-header h2,
+.order-feedback > h2 {
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.feedback-form {
+    display: grid;
+    gap: 14px;
+}
+.feedback-form fieldset {
+    min-width: 0;
+    border: 0;
+    padding: 0;
+}
+.feedback-form legend,
+.feedback-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.star-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.star-row button {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    transition:
+        color 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+.star-row button.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+.feedback-form textarea {
+    width: 100%;
+    min-height: 112px;
+    resize: vertical;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    line-height: 1.5;
+}
+.feedback-form textarea:focus-visible,
+.star-row button:focus-visible,
+.google-review-card a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+.feedback-form .stacked-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.google-review-card {
+    display: grid;
+    gap: 10px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 16px;
+}
+.google-review-card a {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.google-review-card p:last-child {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.order-history {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+.order-history h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+.order-history p {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin-top: 8px;
+}
+.order-page :is(button, a, input):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+}
+.order-page button {
+    cursor: pointer;
+}
+.order-page button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+@media (max-width: 767px) {
+    .order-header {
+        min-height: 76px;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+    .order-brand {
+        font-size: 18px;
+    }
+    .order-content {
+        padding: 24px 16px 200px;
+    }
+    .order-steps {
+        gap: 12px;
+        font-size: 12px;
+        margin-bottom: 28px;
+    }
+    .order-steps > span {
+        gap: 6px;
+    }
+    .order-title h1 {
+        font-size: 28px;
+    }
+    .order-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
+    }
+    .order-summary {
+        position: static;
+    }
+    .order-action {
+        position: fixed;
+        bottom: calc(100px + env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        z-index: 20;
+        padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+        background: var(--color-surface);
+        border-top: 1px solid var(--color-border);
+    }
+    .order-line {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 12px;
+    }
+    .order-thumbnail {
+        width: 64px;
+        height: 72px;
+    }
+    .order-line-total {
+        grid-column: 2;
+    }
+    .order-person {
+        flex-wrap: wrap;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .order-page *,
+    .order-page *::before {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
